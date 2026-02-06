@@ -1371,9 +1371,13 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 
+                if (!res.ok || data.detail) {
+                    throw new Error(data.detail || 'Failed to load devices');
+                }
+                
                 const tbody = document.getElementById('devicesList');
                 
-                if (data.devices.length === 0) {
+                if (!data.devices || data.devices.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No devices found</td></tr>';
                 } else {
                     tbody.innerHTML = data.devices.map(d => `
@@ -1405,8 +1409,12 @@
                 const res = await fetch(`${API_BASE}/api/search/devices?q=${encodeURIComponent(query)}&session_id=${currentSessionId}`);
                 const data = await res.json();
                 
+                if (!res.ok || data.detail) {
+                    throw new Error(data.detail || 'Search failed');
+                }
+                
                 const tbody = document.getElementById('devicesList');
-                if (data.results.length === 0) {
+                if (!data.results || data.results.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No matching devices</td></tr>';
                 } else {
                     tbody.innerHTML = data.results.map(hostname => `
@@ -1544,9 +1552,13 @@
                 const res = await fetch(`${API_BASE}/api/sessions`);
                 const data = await res.json();
                 
+                if (!res.ok || data.detail) {
+                    throw new Error(data.detail || 'Failed to load sessions');
+                }
+                
                 const tbody = document.getElementById('sessionsList');
                 
-                if (data.sessions.length === 0) {
+                if (!data.sessions || data.sessions.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No active sessions</td></tr>';
                 } else {
                     tbody.innerHTML = data.sessions.map(s => `
