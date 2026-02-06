@@ -23,12 +23,12 @@ python app.py
 
 ```
 test_changes/
-├── pre/
-│   ├── router1.log
-│   └── router2.log
-└── post/
-    ├── router1.log
-    └── router2.log
+├── router1/
+│   ├── pre.log
+│   └── post.log
+└── router2/
+    ├── pre.log
+    └── post.log
 ```
 
 Log files contain device prompts and command outputs:
@@ -41,7 +41,7 @@ Gi0/1     Uplink    connected    1    a-full  a-1000
 
 ```
 log-analyzer/
-├── app.py                  # FastAPI app (v3.0.0 - session-based)
+├── app.py                  # FastAPI app
 ├── config.yaml
 ├── core/
 │   ├── parser.py           # Log parser
