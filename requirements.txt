@@ -1,0 +1,18 @@
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Data Processing
+pydantic==2.6.1
+pydantic-settings==2.1.0
+PyYAML==6.0.1
+jinja2==3.1.3
+
+# HTTP Client (for remote file service)
+httpx==0.27.0
+
+# Utilities
+python-dotenv==1.0.1
+aiofiles==23.2.1
+rich==13.7.0

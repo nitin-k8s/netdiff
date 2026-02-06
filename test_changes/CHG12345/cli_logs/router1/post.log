@@ -1,0 +1,47 @@
+command: show version
+Cisco IOS XE Software, Version 17.3.1
+cisco CSR1000V (VXE) processor
+System uptime is 42 days, 16 hours, 45 minutes
+Processor board ID 9ABCDEF1234
+Last reload reason: PowerOn
+
+command: show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       10.1.1.1        YES NVRAM  up                    up
+GigabitEthernet2       10.1.2.1        YES NVRAM  up                    up
+GigabitEthernet3       10.1.3.1        YES manual up                    up
+Loopback0              192.168.1.1     YES NVRAM  up                    up
+
+command: show ip bgp summary
+BGP router identifier 192.168.1.1, local AS number 65001
+BGP table version is 127, main routing table version 127
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.1.1.2        4        65002   45234   45345      127    0    0 3d16h           152
+10.1.2.2        4        65003   38567   38678      127    0    0 2d09h           122
+10.1.3.2        4        65004      15      18      127    0    0 00:15:30         50
+
+command: show interfaces GigabitEthernet1
+GigabitEthernet1 is up, line protocol is up
+  Hardware is CSR vNIC, address is 0050.56bf.1234
+  Internet address is 10.1.1.1/24
+  MTU 1500 bytes, BW 1000000 Kbit/sec
+  Last input 00:00:02, output 00:00:01
+  5 minute input rate 1520 bits/sec, 2 packets/sec
+  5 minute output rate 1220 bits/sec, 1 packets/sec
+     1245678 packets input, 578912345 bytes
+     901234 packets output, 356789123 bytes
+
+command: show running-config interface GigabitEthernet1
+interface GigabitEthernet1
+ description WAN Link to Primary ISP
+ ip address 10.1.1.1 255.255.255.0
+ negotiation auto
+
+command: show ip route summary
+IP routing table name is default
+IP routing table maximum-paths is 32
+Route Source    Networks    Subnets     Replicates  Overhead    Memory
+connected       2           5           0           480         1080
+static          0           1           0           64          144
+bgp 65001       0           324         0           20736       46656
+Total           2           330         0           21280       47880

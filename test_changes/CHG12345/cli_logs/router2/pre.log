@@ -1,0 +1,36 @@
+command: show version
+Cisco IOS XE Software, Version 17.3.1
+cisco ISR4331/K9 processor
+System uptime is 120 days, 8 hours, 15 minutes
+Processor board ID FDO2345X1AB
+Last reload reason: Reload Command
+
+command: show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0/0   172.16.1.1      YES NVRAM  up                    up
+GigabitEthernet0/0/1   172.16.2.1      YES NVRAM  up                    up
+GigabitEthernet0/0/2   unassigned      YES NVRAM  down                  down
+Loopback0              192.168.2.1     YES NVRAM  up                    up
+
+command: show ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+192.168.1.1       1   FULL/BDR        00:00:35    172.16.1.2      GigabitEthernet0/0/0
+192.168.3.1       1   FULL/DR         00:00:38    172.16.2.2      GigabitEthernet0/0/1
+
+command: show interfaces GigabitEthernet0/0/0
+GigabitEthernet0/0/0 is up, line protocol is up
+  Hardware is ISR4331 Built-In GigabitEthernet, address is a0b1.c2d3.e4f5
+  Internet address is 172.16.1.1/24
+  MTU 1500 bytes, BW 1000000 Kbit/sec
+  Last input 00:00:01, output 00:00:02
+  5 minute input rate 2500 bits/sec, 3 packets/sec
+  5 minute output rate 2100 bits/sec, 2 packets/sec
+     5678901 packets input, 1234567890 bytes
+     4567890 packets output, 987654321 bytes
+  0 input errors, 0 CRC, 0 frame
+
+command: show ip route ospf
+O     10.10.10.0/24 [110/2] via 172.16.1.2, 00:45:12, GigabitEthernet0/0/0
+O     10.10.20.0/24 [110/2] via 172.16.2.2, 00:45:12, GigabitEthernet0/0/1
+O     192.168.1.1/32 [110/2] via 172.16.1.2, 00:45:12, GigabitEthernet0/0/0
+O     192.168.3.1/32 [110/2] via 172.16.2.2, 00:45:12, GigabitEthernet0/0/1

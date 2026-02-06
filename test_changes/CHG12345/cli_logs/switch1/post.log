@@ -1,0 +1,68 @@
+command: show version
+Cisco IOS Software, C3750 Software (C3750-IPSERVICESK9-M), Version 15.0(2)SE11
+Switch uptime is 89 days, 5 hours, 37 minutes
+System serial number: CAT1234ABCD
+
+command: show interfaces status
+Port      Name               Status       Vlan       Duplex  Speed Type
+Gi1/0/1   Uplink-Router1     connected    trunk      a-full  a-1000 10/100/1000BaseTX
+Gi1/0/2   Uplink-Router2     connected    trunk      a-full  a-1000 10/100/1000BaseTX
+Gi1/0/3   Server-Rack1       connected    100        a-full  a-1000 10/100/1000BaseTX
+Gi1/0/4   Server-Rack2       err-disabled 100        auto    auto   10/100/1000BaseTX
+Gi1/0/5   User-Port1         connected    10         a-full  a-100  10/100/1000BaseTX
+Gi1/0/6   User-Port2         connected    10         a-full  a-100  10/100/1000BaseTX
+Gi1/0/7   New-Server1        connected    100        a-full  a-1000 10/100/1000BaseTX
+Gi1/0/8                      disabled     1          auto    auto   10/100/1000BaseTX
+
+command: show vlan brief
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi1/0/8
+10   Users                            active    Gi1/0/5, Gi1/0/6
+100  Servers                          active    Gi1/0/3, Gi1/0/4, Gi1/0/7
+200  Management                       active    
+999  Native                           active    
+
+command: show spanning-tree summary
+Switch is in rapid-pvst mode
+Root bridge for: VLAN0010, VLAN0200
+Extended system ID           is enabled
+Portfast Default             is disabled
+PortFast BPDU Guard Default  is disabled
+
+Name                   Blocking Listening Learning Forwarding STP Active
+---------------------- -------- --------- -------- ---------- ----------
+VLAN0001                     0         0        0          1          1
+VLAN0010                     0         0        0          4          4
+VLAN0100                     0         0        0          4          4
+VLAN0200                     0         0        0          2          2
+---------------------- -------- --------- -------- ---------- ----------
+4 vlans                      0         0        0         11         11
+
+command: show mac address-table count
+Mac Entries for Vlan 1:
+---------------------------
+Dynamic Address Count  : 3
+Static  Address Count  : 0
+Total Mac Addresses    : 3
+
+Mac Entries for Vlan 10:
+---------------------------
+Dynamic Address Count  : 52
+Static  Address Count  : 0
+Total Mac Addresses    : 52
+
+Mac Entries for Vlan 100:
+---------------------------
+Dynamic Address Count  : 31
+Static  Address Count  : 2
+Total Mac Addresses    : 33
+
+Mac Entries for Vlan 200:
+---------------------------
+Dynamic Address Count  : 8
+Static  Address Count  : 1
+Total Mac Addresses    : 9
+
+command: show logging | include err-disabled
+Feb  6 08:52:18: %PM-4-ERR_DISABLE: bpduguard error detected on Gi1/0/4, putting Gi1/0/4 in err-disable state

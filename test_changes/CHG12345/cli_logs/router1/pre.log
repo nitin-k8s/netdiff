@@ -1,0 +1,46 @@
+command: show version
+Cisco IOS XE Software, Version 17.3.1
+cisco CSR1000V (VXE) processor
+System uptime is 42 days, 15 hours, 30 minutes
+Processor board ID 9ABCDEF1234
+Last reload reason: PowerOn
+
+command: show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       10.1.1.1        YES NVRAM  up                    up
+GigabitEthernet2       10.1.2.1        YES NVRAM  up                    up
+GigabitEthernet3       unassigned      YES NVRAM  administratively down down
+Loopback0              192.168.1.1     YES NVRAM  up                    up
+
+command: show ip bgp summary
+BGP router identifier 192.168.1.1, local AS number 65001
+BGP table version is 125, main routing table version 125
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.1.1.2        4        65002   45123   45234      125    0    0 3d15h           150
+10.1.2.2        4        65003   38456   38567      125    0    0 2d08h           120
+
+command: show interfaces GigabitEthernet1
+GigabitEthernet1 is up, line protocol is up
+  Hardware is CSR vNIC, address is 0050.56bf.1234
+  Internet address is 10.1.1.1/24
+  MTU 1500 bytes, BW 1000000 Kbit/sec
+  Last input 00:00:05, output 00:00:03
+  5 minute input rate 1500 bits/sec, 2 packets/sec
+  5 minute output rate 1200 bits/sec, 1 packets/sec
+     1234567 packets input, 567891234 bytes
+     890123 packets output, 345678912 bytes
+
+command: show running-config interface GigabitEthernet1
+interface GigabitEthernet1
+ description WAN Link to ISP
+ ip address 10.1.1.1 255.255.255.0
+ negotiation auto
+
+command: show ip route summary
+IP routing table name is default
+IP routing table maximum-paths is 32
+Route Source    Networks    Subnets     Replicates  Overhead    Memory
+connected       2           4           0           384         864
+static          0           1           0           64          144
+bgp 65001       0           270         0           17280       38880
+Total           2           275         0           17728       39888

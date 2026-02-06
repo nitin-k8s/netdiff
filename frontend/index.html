@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetDiff - Network Device Log Analyzer</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --bg-input: #0f172a;
+            --border-color: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
+            --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon svg { color: white; }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: -4px;
+        }
+        
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+        
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+        
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            padding: 24px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .card-header svg {
+            color: var(--accent-blue);
+            width: 18px;
+            height: 18px;
+        }
+        
+        .card-body {
+            padding: 16px;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+        
+        .btn-icon {
+            padding: 10px;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-blue);
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Results Section */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-card);
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-card-hover);
+        }
+        
+        .tab.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .tab svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Analysis Results */
+        .analysis-result {
+            display: none;
+        }
+        
+        .analysis-result.active {
+            display: block;
+        }
+        
+        .result-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .stat-card.success .stat-value { color: var(--accent-green); }
+        .stat-card.warning .stat-value { color: var(--accent-yellow); }
+        .stat-card.danger .stat-value { color: var(--accent-red); }
+        
+        /* Report Links */
+        .report-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .report-link {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+        
+        .report-link:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-card-hover);
+        }
+        
+        .report-link .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .report-link .icon-box.blue { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+        .report-link .icon-box.green { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+        .report-link .icon-box.purple { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); }
+        .report-link .icon-box.cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+        
+        .report-link-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .report-link-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        /* Query Section */
+        .query-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .query-input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .query-input-group input {
+            flex: 1;
+        }
+        
+        .query-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .suggestion-chip {
+            padding: 6px 12px;
+            background: var(--bg-card-hover);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-chip:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .query-result {
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* File Browser */
+        .file-browser {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .file-browser-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .file-browser-path {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border-radius: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .file-browser-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .file-item:hover {
+            background: var(--bg-card-hover);
+        }
+        
+        .file-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+        }
+        
+        .file-item.folder svg {
+            color: var(--accent-yellow);
+        }
+        
+        .file-item span {
+            font-size: 14px;
+        }
+        
+        /* API Reference */
+        .api-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .api-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 8px;
+        }
+        
+        .api-method {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .api-method.get { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .api-method.post { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+        .api-method.delete { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        
+        .api-path {
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        
+        .api-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* Sessions Table */
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .sessions-table th,
+        .sessions-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sessions-table th {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .sessions-table td {
+            font-size: 14px;
+        }
+        
+        .sessions-table tbody tr:hover {
+            background: var(--bg-card-hover);
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success { border-color: var(--accent-green); }
+        .toast.error { border-color: var(--accent-red); }
+        
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .result-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .report-links {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <i data-lucide="network" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+                <div class="logo-text">NetDiff</div>
+                <div class="logo-subtitle">Network Device Log Analyzer v3.0</div>
+            </div>
+        </div>
+        <div class="header-status">
+            <div class="status-badge" id="apiStatus">
+                <i data-lucide="activity" style="width: 14px; height: 14px;"></i>
+                <span>Checking...</span>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Analysis Configuration -->
+            <div class="card">
+                <div class="card-header">
+                    <i data-lucide="scan"></i>
+                    <h3>Analyze Change</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Change Directory Path</label>
+                        <div class="input-group">
+                            <input type="text" id="changePath" placeholder="C:\changes\CHG0012345">
+                            <button class="btn btn-secondary btn-icon" onclick="openFileBrowser()" title="Browse">
+                                <i data-lucide="folder-open"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Masking Profile</label>
+                        <select id="maskingProfile">
+                            <option value="minimal">Minimal - Timestamps only</option>
+                            <option value="standard" selected>Standard - Timestamps, IDs, uptime</option>
+                            <option value="strict">Strict - Include counters</option>
+                            <option value="all">All - Full masking</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="includeUnchanged">
+                            <label for="includeUnchanged">Include unchanged commands</label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block" onclick="analyzeChange()" id="analyzeBtn">
+                        <i data-lucide="play"></i>
+                        Start Analysis
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Active Session Info -->
+            <div class="card" id="sessionCard" style="display: none;">
+                <div class="card-header">
+                    <i data-lucide="database"></i>
+                    <h3>Active Session</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Session ID</label>
+                        <input type="text" id="sessionId" readonly style="font-family: monospace; font-size: 12px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Change Number</label>
+                        <input type="text" id="changeNumber" readonly>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <i data-lucide="zap"></i>
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-secondary btn-block btn-sm" onclick="showTab('sessions')" style="margin-bottom: 8px;">
+                        <i data-lucide="list"></i>
+                        View All Sessions
+                    </button>
+                    <button class="btn btn-secondary btn-block btn-sm" onclick="showTab('api')" style="margin-bottom: 8px;">
+                        <i data-lucide="code-2"></i>
+                        API Reference
+                    </button>
+                    <a href="/docs" target="_blank" class="btn btn-secondary btn-block btn-sm" style="text-decoration: none;">
+                        <i data-lucide="book-open"></i>
+                        Swagger Docs
+                    </a>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="results" onclick="showTab('results')">
+                    <i data-lucide="layout-dashboard"></i>
+                    Results
+                </div>
+                <div class="tab" data-tab="query" onclick="showTab('query')">
+                    <i data-lucide="message-square"></i>
+                    Query Engine
+                </div>
+                <div class="tab" data-tab="devices" onclick="showTab('devices')">
+                    <i data-lucide="server"></i>
+                    Devices
+                </div>
+                <div class="tab" data-tab="browser" onclick="showTab('browser')">
+                    <i data-lucide="folder"></i>
+                    File Browser
+                </div>
+                <div class="tab" data-tab="sessions" onclick="showTab('sessions')">
+                    <i data-lucide="database"></i>
+                    Sessions
+                </div>
+                <div class="tab" data-tab="api" onclick="showTab('api')">
+                    <i data-lucide="code-2"></i>
+                    API
+                </div>
+            </div>
+            
+            <!-- Results Tab -->
+            <div class="tab-content active" id="tab-results">
+                <div class="card">
+                    <div class="card-header">
+                        <i data-lucide="bar-chart-3"></i>
+                        <h3>Analysis Results</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="noResults" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <i data-lucide="inbox" style="width: 48px; height: 48px; margin-bottom: 16px;"></i>
+                            <p>No analysis results yet. Enter a change directory path and click "Start Analysis".</p>
+                        </div>
+                        
+                        <div id="analysisResults" class="analysis-result">
+                            <!-- Summary Stats -->
+                            <div class="result-summary">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statTotalDevices">0</div>
+                                    <div class="stat-label">Total Devices</div>
+                                </div>
+                                <div class="stat-card success">
+                                    <div class="stat-value" id="statChangedDevices">0</div>
+                                    <div class="stat-label">With Changes</div>
+                                </div>
+                                <div class="stat-card warning">
+                                    <div class="stat-value" id="statTotalCommands">0</div>
+                                    <div class="stat-label">Commands Parsed</div>
+                                </div>
+                                <div class="stat-card danger">
+                                    <div class="stat-value" id="statChangedCommands">0</div>
+                                    <div class="stat-label">Changed Commands</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Report Links -->
+                            <h4 style="margin-bottom: 12px; font-size: 14px; color: var(--text-secondary);">
+                                <i data-lucide="file-text" style="width: 16px; height: 16px; vertical-align: middle;"></i>
+                                View Reports
+                            </h4>
+                            <div class="report-links">
+                                <a href="#" class="report-link" id="paginatedReportLink" target="_blank">
+                                    <div class="icon-box blue">
+                                        <i data-lucide="layout-grid"></i>
+                                    </div>
+                                    <div class="report-link-info">
+                                        <h4>Paginated Report</h4>
+                                        <p id="paginatedReportUrl">/api/report/{change}/index.html</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="report-link" id="legacyReportLink" target="_blank">
+                                    <div class="icon-box green">
+                                        <i data-lucide="file-text"></i>
+                                    </div>
+                                    <div class="report-link-info">
+                                        <h4>Legacy Report (Single Page)</h4>
+                                        <p id="legacyReportUrl">/api/report-legacy/{change}</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="report-link" id="downloadHtmlLink">
+                                    <div class="icon-box purple">
+                                        <i data-lucide="download"></i>
+                                    </div>
+                                    <div class="report-link-info">
+                                        <h4>Download HTML</h4>
+                                        <p id="downloadHtmlUrl">/api/download/{change}?format=html</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="report-link" id="downloadZipLink">
+                                    <div class="icon-box cyan">
+                                        <i data-lucide="archive"></i>
+                                    </div>
+                                    <div class="report-link-info">
+                                        <h4>Download ZIP</h4>
+                                        <p id="downloadZipUrl">/api/download/{change}?format=zip</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Query Tab -->
+            <div class="tab-content" id="tab-query">
+                <div class="query-section">
+                    <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="message-square" style="width: 18px; height: 18px;"></i>
+                        Query Your Logs
+                    </h4>
+                    
+                    <div class="query-input-group">
+                        <input type="text" id="queryInput" placeholder="Ask a question about your network changes...">
+                        <button class="btn btn-primary" onclick="sendQuery()">
+                            <i data-lucide="send"></i>
+                            Ask
+                        </button>
+                    </div>
+                    
+                    <div class="query-suggestions" id="querySuggestions">
+                        <!-- Suggestions loaded dynamically -->
+                    </div>
+                    
+                    <h5 style="margin-bottom: 8px; font-size: 13px; color: var(--text-muted);">Response:</h5>
+                    <div class="query-result" id="queryResult">
+                        Query results will appear here after you ask a question.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Devices Tab -->
+            <div class="tab-content" id="tab-devices">
+                <div class="card">
+                    <div class="card-header">
+                        <i data-lucide="server"></i>
+                        <h3>Analyzed Devices</h3>
+                        <div style="margin-left: auto; display: flex; gap: 8px;">
+                            <select id="deviceFilter" onchange="loadDevices()" style="width: 150px;">
+                                <option value="">All Devices</option>
+                                <option value="changed">With Changes</option>
+                                <option value="unchanged">No Changes</option>
+                            </select>
+                            <input type="text" id="deviceSearch" placeholder="Search hostname..." style="width: 200px;" oninput="searchDevices()">
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="sessions-table" id="devicesTable">
+                            <thead>
+                                <tr>
+                                    <th>Hostname</th>
+                                    <th>Commands</th>
+                                    <th>Changes</th>
+                                    <th>Interface</th>
+                                    <th>BGP</th>
+                                    <th>OSPF</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devicesList">
+                                <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No devices loaded. Run an analysis first.</td></tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                            <span id="devicesPagination" style="font-size: 13px; color: var(--text-muted);">Page 1 of 1</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="prevDevicesPage()"><i data-lucide="chevron-left"></i></button>
+                                <button class="btn btn-secondary btn-sm" onclick="nextDevicesPage()"><i data-lucide="chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Browser Tab -->
+            <div class="tab-content" id="tab-browser">
+                <div class="file-browser">
+                    <div class="file-browser-header">
+                        <button class="btn btn-secondary btn-sm" onclick="browseParent()">
+                            <i data-lucide="arrow-up"></i>
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="browseDrives()">
+                            <i data-lucide="hard-drive"></i>
+                            Drives
+                        </button>
+                        <div class="file-browser-path" id="browserPath">Select a drive to browse</div>
+                        <button class="btn btn-primary btn-sm" onclick="selectCurrentPath()">
+                            <i data-lucide="check"></i>
+                            Select
+                        </button>
+                    </div>
+                    <div class="file-browser-list" id="fileList">
+                        <!-- Files loaded dynamically -->
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 16px;">
+                    <div class="card-header">
+                        <i data-lucide="check-circle"></i>
+                        <h3>Path Validation</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="text" id="validatePath" placeholder="Enter path to validate">
+                            <button class="btn btn-secondary" onclick="validatePath()">Validate</button>
+                        </div>
+                        <div id="validationResult" style="margin-top: 12px; padding: 12px; border-radius: 8px; display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sessions Tab -->
+            <div class="tab-content" id="tab-sessions">
+                <div class="card">
+                    <div class="card-header">
+                        <i data-lucide="database"></i>
+                        <h3>Active Sessions</h3>
+                        <button class="btn btn-secondary btn-sm" style="margin-left: auto;" onclick="loadSessions()">
+                            <i data-lucide="refresh-cw"></i>
+                            Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table class="sessions-table">
+                            <thead>
+                                <tr>
+                                    <th>Session ID</th>
+                                    <th>Change Number</th>
+                                    <th>Devices</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sessionsList">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading sessions...</td></tr>
+                            </tbody>
+                        </table>
+                        <div id="sessionsInfo" style="margin-top: 12px; font-size: 13px; color: var(--text-muted);"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API Tab -->
+            <div class="tab-content" id="tab-api">
+                <div class="card">
+                    <div class="card-header">
+                        <i data-lucide="code-2"></i>
+                        <h3>API Reference</h3>
+                        <a href="/docs" target="_blank" class="btn btn-secondary btn-sm" style="margin-left: auto;">
+                            <i data-lucide="external-link"></i>
+                            Full Docs
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="api-list">
+                            <div style="margin-bottom: 16px;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 8px;">Analysis & Reports</h4>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method post">POST</span>
+                                <span class="api-path">/api/analyze</span>
+                                <span class="api-desc">Analyze change directory</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/report/{change_number}/{file_path}</span>
+                                <span class="api-desc">Paginated HTML report</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/report-legacy/{change_number}</span>
+                                <span class="api-desc">Single-file HTML report</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/download/{change_number}?format=html|zip</span>
+                                <span class="api-desc">Download report files</span>
+                            </div>
+                            
+                            <div style="margin: 16px 0 8px;">
+                                <h4 style="color: var(--accent-green); margin-bottom: 8px;">Devices & Commands</h4>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/devices</span>
+                                <span class="api-desc">Paginated device list</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/devices/{hostname}/commands</span>
+                                <span class="api-desc">Device commands</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/devices/{hostname}/diff/{command}</span>
+                                <span class="api-desc">Command diff</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/search/devices?q={query}</span>
+                                <span class="api-desc">Search devices</span>
+                            </div>
+                            
+                            <div style="margin: 16px 0 8px;">
+                                <h4 style="color: var(--accent-purple); margin-bottom: 8px;">Query Engine</h4>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method post">POST</span>
+                                <span class="api-path">/api/chat</span>
+                                <span class="api-desc">Natural language query</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/query/suggestions</span>
+                                <span class="api-desc">Query suggestions</span>
+                            </div>
+                            
+                            <div style="margin: 16px 0 8px;">
+                                <h4 style="color: var(--accent-yellow); margin-bottom: 8px;">File Browsing</h4>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/browse/drives</span>
+                                <span class="api-desc">List available drives</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method post">POST</span>
+                                <span class="api-path">/api/browse/directory</span>
+                                <span class="api-desc">Browse directory</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method post">POST</span>
+                                <span class="api-path">/api/browse/validate</span>
+                                <span class="api-desc">Validate change directory</span>
+                            </div>
+                            
+                            <div style="margin: 16px 0 8px;">
+                                <h4 style="color: var(--accent-cyan); margin-bottom: 8px;">Sessions & Status</h4>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/sessions</span>
+                                <span class="api-desc">List active sessions</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method delete">DEL</span>
+                                <span class="api-path">/api/sessions/{session_id}</span>
+                                <span class="api-desc">Delete session</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/statistics</span>
+                                <span class="api-desc">Analysis statistics</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/health</span>
+                                <span class="api-desc">Health check</span>
+                            </div>
+                            
+                            <div style="margin: 16px 0 8px;">
+                                <h4 style="color: var(--accent-red); margin-bottom: 8px;">Masking Configuration</h4>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/masking/profiles</span>
+                                <span class="api-desc">Available masking profiles</span>
+                            </div>
+                            <div class="api-item">
+                                <span class="api-method get">GET</span>
+                                <span class="api-path">/api/masking/categories</span>
+                                <span class="api-desc">Masking categories</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i data-lucide="check-circle" id="toastIcon"></i>
+        <span id="toastMessage">Message</span>
+    </div>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // State
+        let currentSessionId = null;
+        let currentChangeNumber = null;
+        let currentBrowserPath = null;
+        let browserParentPath = null;
+        let devicesPage = 1;
+        
+        // API Base URL
+        const API_BASE = '';
+        
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+            
+            msg.textContent = message;
+            toast.className = `toast ${type}`;
+            icon.setAttribute('data-lucide', type === 'success' ? 'check-circle' : 'alert-circle');
+            lucide.createIcons();
+            
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+        
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Load data for specific tabs
+            if (tabName === 'sessions') loadSessions();
+            if (tabName === 'browser') browseDrives();
+            if (tabName === 'query') loadQuerySuggestions();
+            if (tabName === 'devices' && currentSessionId) loadDevices();
+        }
+        
+        // Check API health
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${API_BASE}/api/health`);
+                const data = await res.json();
+                const badge = document.getElementById('apiStatus');
+                
+                if (data.status === 'healthy') {
+                    badge.className = 'status-badge';
+                    badge.innerHTML = `<i data-lucide="activity" style="width: 14px; height: 14px;"></i><span>API Online (${data.active_sessions} sessions)</span>`;
+                } else {
+                    badge.className = 'status-badge error';
+                    badge.innerHTML = `<i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i><span>API Error</span>`;
+                }
+                lucide.createIcons();
+            } catch (e) {
+                const badge = document.getElementById('apiStatus');
+                badge.className = 'status-badge error';
+                badge.innerHTML = `<i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i><span>API Offline</span>`;
+                lucide.createIcons();
+            }
+        }
+        
+        // Analyze change directory
+        async function analyzeChange() {
+            const path = document.getElementById('changePath').value;
+            const profile = document.getElementById('maskingProfile').value;
+            const includeUnchanged = document.getElementById('includeUnchanged').checked;
+            
+            if (!path) {
+                showToast('Please enter a change directory path', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('analyzeBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        change_directory: path,
+                        masking_profile: profile,
+                        include_unchanged: includeUnchanged
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.detail || 'Analysis failed');
+                }
+                
+                // Store session info
+                currentSessionId = data.session_id;
+                currentChangeNumber = data.change_number;
+                
+                // Update session card
+                document.getElementById('sessionCard').style.display = 'block';
+                document.getElementById('sessionId').value = data.session_id;
+                document.getElementById('changeNumber').value = data.change_number;
+                
+                // Update results
+                document.getElementById('noResults').style.display = 'none';
+                document.getElementById('analysisResults').classList.add('active');
+                
+                document.getElementById('statTotalDevices').textContent = data.total_devices;
+                document.getElementById('statChangedDevices').textContent = data.devices_with_changes;
+                document.getElementById('statTotalCommands').textContent = data.statistics.total_commands || 0;
+                document.getElementById('statChangedCommands').textContent = data.statistics.changed_commands || 0;
+                
+                // Update report links
+                document.getElementById('paginatedReportLink').href = data.report_url;
+                document.getElementById('paginatedReportUrl').textContent = data.report_url;
+                
+                document.getElementById('legacyReportLink').href = data.legacy_report_url;
+                document.getElementById('legacyReportUrl').textContent = data.legacy_report_url;
+                
+                document.getElementById('downloadHtmlLink').href = `/api/download/${data.change_number}?format=html`;
+                document.getElementById('downloadHtmlUrl').textContent = `/api/download/${data.change_number}?format=html`;
+                
+                document.getElementById('downloadZipLink').href = `/api/download/${data.change_number}?format=zip`;
+                document.getElementById('downloadZipUrl').textContent = `/api/download/${data.change_number}?format=zip`;
+                
+                lucide.createIcons();
+                showToast(`Analysis complete! ${data.total_devices} devices, ${data.devices_with_changes} with changes`);
+                checkHealth();
+                
+            } catch (e) {
+                showToast(e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="play"></i> Start Analysis';
+                lucide.createIcons();
+            }
+        }
+        
+        // Query engine
+        async function loadQuerySuggestions() {
+            try {
+                const res = await fetch(`${API_BASE}/api/query/suggestions`);
+                const data = await res.json();
+                
+                const container = document.getElementById('querySuggestions');
+                container.innerHTML = data.suggestions.map(s => 
+                    `<span class="suggestion-chip" onclick="setQuery('${s.query}')">${s.query}</span>`
+                ).join('');
+            } catch (e) {
+                console.error('Failed to load suggestions:', e);
+            }
+        }
+        
+        function setQuery(query) {
+            document.getElementById('queryInput').value = query;
+        }
+        
+        async function sendQuery() {
+            const question = document.getElementById('queryInput').value;
+            if (!question) {
+                showToast('Please enter a question', 'error');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('queryResult');
+            resultDiv.textContent = 'Thinking...';
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question,
+                        session_id: currentSessionId
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.detail || 'Query failed');
+                }
+                
+                resultDiv.textContent = data.answer;
+            } catch (e) {
+                resultDiv.textContent = `Error: ${e.message}`;
+                showToast(e.message, 'error');
+            }
+        }
+        
+        // Device list
+        async function loadDevices() {
+            if (!currentSessionId) {
+                showToast('No active session. Run an analysis first.', 'error');
+                return;
+            }
+            
+            const status = document.getElementById('deviceFilter').value;
+            
+            try {
+                let url = `${API_BASE}/api/devices?session_id=${currentSessionId}&page=${devicesPage}&page_size=20`;
+                if (status) url += `&status=${status}`;
+                
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                const tbody = document.getElementById('devicesList');
+                
+                if (data.devices.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No devices found</td></tr>';
+                } else {
+                    tbody.innerHTML = data.devices.map(d => `
+                        <tr>
+                            <td><strong>${d.hostname}</strong></td>
+                            <td>${d.total_commands}</td>
+                            <td>${d.commands_with_changes}</td>
+                            <td>${d.has_interface_changes ? '✓' : '-'}</td>
+                            <td>${d.has_bgp_changes ? '✓' : '-'}</td>
+                            <td>${d.has_ospf_changes ? '✓' : '-'}</td>
+                            <td><span style="color: ${d.status === 'changed' ? 'var(--accent-yellow)' : 'var(--accent-green)'};">${d.status}</span></td>
+                        </tr>
+                    `).join('');
+                }
+                
+                document.getElementById('devicesPagination').textContent = 
+                    `Page ${data.pagination.page} of ${data.pagination.total_pages} (${data.pagination.total_items} devices)`;
+                
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        async function searchDevices() {
+            const query = document.getElementById('deviceSearch').value;
+            if (!currentSessionId || query.length < 2) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/search/devices?q=${encodeURIComponent(query)}&session_id=${currentSessionId}`);
+                const data = await res.json();
+                
+                const tbody = document.getElementById('devicesList');
+                if (data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No matching devices</td></tr>';
+                } else {
+                    tbody.innerHTML = data.results.map(hostname => `
+                        <tr><td colspan="7">${hostname}</td></tr>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Search failed:', e);
+            }
+        }
+        
+        function prevDevicesPage() {
+            if (devicesPage > 1) {
+                devicesPage--;
+                loadDevices();
+            }
+        }
+        
+        function nextDevicesPage() {
+            devicesPage++;
+            loadDevices();
+        }
+        
+        // File browser
+        async function browseDrives() {
+            try {
+                const res = await fetch(`${API_BASE}/api/browse/drives`);
+                const data = await res.json();
+                
+                const fileList = document.getElementById('fileList');
+                document.getElementById('browserPath').textContent = 'Select a drive';
+                currentBrowserPath = null;
+                browserParentPath = null;
+                
+                fileList.innerHTML = data.drives.map(d => `
+                    <div class="file-item folder" onclick="browseDirectory('${d.path.replace(/\\/g, '\\\\')}')">
+                        <i data-lucide="hard-drive"></i>
+                        <span>${d.name} (${d.path})</span>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {
+                showToast('Failed to load drives: ' + e.message, 'error');
+            }
+        }
+        
+        async function browseDirectory(path) {
+            try {
+                const res = await fetch(`${API_BASE}/api/browse/directory`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: path })
+                });
+                
+                const data = await res.json();
+                
+                currentBrowserPath = data.path;
+                browserParentPath = data.parent;
+                document.getElementById('browserPath').textContent = data.path;
+                
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = data.items
+                    .filter(item => item.is_directory)
+                    .map(item => `
+                        <div class="file-item folder" onclick="browseDirectory('${item.path.replace(/\\/g, '\\\\')}')">
+                            <i data-lucide="folder"></i>
+                            <span>${item.name}</span>
+                        </div>
+                    `).join('');
+                lucide.createIcons();
+            } catch (e) {
+                showToast('Failed to browse directory: ' + e.message, 'error');
+            }
+        }
+        
+        function browseParent() {
+            if (browserParentPath) {
+                browseDirectory(browserParentPath);
+            } else {
+                browseDrives();
+            }
+        }
+        
+        function selectCurrentPath() {
+            if (currentBrowserPath) {
+                document.getElementById('changePath').value = currentBrowserPath;
+                document.getElementById('validatePath').value = currentBrowserPath;
+                showToast('Path selected: ' + currentBrowserPath);
+                showTab('results');
+            }
+        }
+        
+        function openFileBrowser() {
+            showTab('browser');
+            browseDrives();
+        }
+        
+        // Path validation
+        async function validatePath() {
+            const path = document.getElementById('validatePath').value;
+            if (!path) {
+                showToast('Enter a path to validate', 'error');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/browse/validate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: path })
+                });
+                
+                const data = await res.json();
+                const resultDiv = document.getElementById('validationResult');
+                resultDiv.style.display = 'block';
+                
+                if (data.valid) {
+                    resultDiv.style.background = 'rgba(16, 185, 129, 0.15)';
+                    resultDiv.style.color = 'var(--accent-green)';
+                    resultDiv.innerHTML = `<i data-lucide="check-circle" style="width: 16px; height: 16px; vertical-align: middle;"></i> ${data.message}`;
+                } else {
+                    resultDiv.style.background = 'rgba(239, 68, 68, 0.15)';
+                    resultDiv.style.color = 'var(--accent-red)';
+                    resultDiv.innerHTML = `<i data-lucide="x-circle" style="width: 16px; height: 16px; vertical-align: middle;"></i> ${data.message}`;
+                }
+                lucide.createIcons();
+            } catch (e) {
+                showToast('Validation failed: ' + e.message, 'error');
+            }
+        }
+        
+        // Sessions
+        async function loadSessions() {
+            try {
+                const res = await fetch(`${API_BASE}/api/sessions`);
+                const data = await res.json();
+                
+                const tbody = document.getElementById('sessionsList');
+                
+                if (data.sessions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No active sessions</td></tr>';
+                } else {
+                    tbody.innerHTML = data.sessions.map(s => `
+                        <tr>
+                            <td style="font-family: monospace; font-size: 12px;">${s.session_id}</td>
+                            <td>${s.change_number}</td>
+                            <td>${s.device_count}</td>
+                            <td>${new Date(s.created_at).toLocaleString()}</td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm" onclick="useSession('${s.session_id}', '${s.change_number}')">Use</button>
+                                <button class="btn btn-secondary btn-sm" onclick="deleteSession('${s.session_id}')" style="margin-left: 4px;">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+                
+                document.getElementById('sessionsInfo').textContent = 
+                    `${data.total} of ${data.max_sessions} sessions used | TTL: ${data.ttl_minutes} minutes`;
+                
+                lucide.createIcons();
+            } catch (e) {
+                showToast('Failed to load sessions: ' + e.message, 'error');
+            }
+        }
+        
+        function useSession(sessionId, changeNumber) {
+            currentSessionId = sessionId;
+            currentChangeNumber = changeNumber;
+            
+            document.getElementById('sessionCard').style.display = 'block';
+            document.getElementById('sessionId').value = sessionId;
+            document.getElementById('changeNumber').value = changeNumber;
+            
+            showToast(`Now using session: ${changeNumber}`);
+            showTab('results');
+        }
+        
+        async function deleteSession(sessionId) {
+            if (!confirm('Delete this session?')) return;
+            
+            try {
+                await fetch(`${API_BASE}/api/sessions/${sessionId}`, { method: 'DELETE' });
+                showToast('Session deleted');
+                loadSessions();
+                
+                if (sessionId === currentSessionId) {
+                    currentSessionId = null;
+                    currentChangeNumber = null;
+                    document.getElementById('sessionCard').style.display = 'none';
+                }
+            } catch (e) {
+                showToast('Failed to delete session', 'error');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkHealth();
+            loadSessions();
+            loadQuerySuggestions();
+            
+            // Handle Enter key in inputs
+            document.getElementById('queryInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendQuery();
+            });
+            
+            document.getElementById('changePath').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') analyzeChange();
+            });
+        });
+    </script>
+</body>
+</html>

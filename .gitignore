@@ -1,0 +1,32 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+
+# Reports and outputs
+reports/
+
+
+
+# Database (legacy)
+data/
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
