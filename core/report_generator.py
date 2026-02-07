@@ -25,10 +25,18 @@ INDEX_TEMPLATE = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ change_number }} - Change Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sans);
+            font-size: 14px;
             background: #f5f5f5;
             padding: 20px;
         }
@@ -72,8 +80,9 @@ INDEX_TEMPLATE = """
         .filters input, .filters select {
             padding: 8px 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 14px;
+            font-family: var(--font-sans);
         }
         .filters input[type="text"] { width: 250px; }
         
@@ -305,10 +314,18 @@ DEVICE_TEMPLATE = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ hostname }} - {{ change_number }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sans);
+            font-size: 14px;
             background: #f5f5f5;
             padding: 20px;
         }
@@ -376,7 +393,7 @@ DEVICE_TEMPLATE = """
         .command-header:hover { background: #e9ecef; }
         
         .command-name {
-            font-family: 'Consolas', monospace;
+            font-family: var(--font-mono);
             font-size: 14px;
             font-weight: 600;
         }
@@ -400,7 +417,7 @@ DEVICE_TEMPLATE = """
         .diff-table {
             width: 100%;
             border-collapse: collapse;
-            font-family: 'Consolas', monospace;
+            font-family: var(--font-mono);
             font-size: 12px;
         }
         .diff-table td {
@@ -438,12 +455,20 @@ DEVICE_TEMPLATE = """
             margin-bottom: 15px;
         }
         .expand-all button {
-            padding: 8px 16px;
-            background: #667eea;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: var(--font-sans);
+            transition: all 0.2s;
+        }
+        .expand-all button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
     </style>
 </head>

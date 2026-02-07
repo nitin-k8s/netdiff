@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NetDiff - Network Device Log Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-            --bg-input: #0f172a;
-            --border-color: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            /* Fonts */
+            --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            
+            /* Colors */
+            --bg-dark: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-input: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
             --accent-blue: #3b82f6;
             --accent-cyan: #06b6d4;
             --accent-green: #10b981;
@@ -27,7 +35,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            font-family: var(--font-sans);
+            font-size: 14px;
             background: var(--bg-dark);
             color: var(--text-primary);
             min-height: 100vh;
@@ -185,10 +194,11 @@
         }
         
         .btn {
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 10px 18px;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
+            font-family: var(--font-sans);
             cursor: pointer;
             border: none;
             display: inline-flex;
@@ -446,7 +456,7 @@
             padding: 16px;
             min-height: 100px;
             white-space: pre-wrap;
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: var(--font-mono);
             font-size: 13px;
             color: var(--text-secondary);
         }
@@ -742,28 +752,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Quick Actions -->
-            <div class="card">
-                <div class="card-header">
-                    <i data-lucide="zap"></i>
-                    <h3>Quick Actions</h3>
-                </div>
-                <div class="card-body">
-                    <button class="btn btn-secondary btn-block btn-sm" onclick="showTab('sessions')" style="margin-bottom: 8px;">
-                        <i data-lucide="list"></i>
-                        View All Sessions
-                    </button>
-                    <button class="btn btn-secondary btn-block btn-sm" onclick="showTab('api')" style="margin-bottom: 8px;">
-                        <i data-lucide="code-2"></i>
-                        API Reference
-                    </button>
-                    <a href="/docs" target="_blank" class="btn btn-secondary btn-block btn-sm" style="text-decoration: none;">
-                        <i data-lucide="book-open"></i>
-                        Swagger Docs
-                    </a>
-                </div>
-            </div>
         </aside>
         
         <!-- Content Area -->
@@ -789,10 +777,6 @@
                 <div class="tab" data-tab="sessions" onclick="showTab('sessions')">
                     <i data-lucide="database"></i>
                     Sessions
-                </div>
-                <div class="tab" data-tab="api" onclick="showTab('api')">
-                    <i data-lucide="code-2"></i>
-                    API
                 </div>
             </div>
             
@@ -1015,142 +999,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- API Tab -->
-            <div class="tab-content" id="tab-api">
-                <div class="card">
-                    <div class="card-header">
-                        <i data-lucide="code-2"></i>
-                        <h3>API Reference</h3>
-                        <a href="/docs" target="_blank" class="btn btn-secondary btn-sm" style="margin-left: auto;">
-                            <i data-lucide="external-link"></i>
-                            Full Docs
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <div class="api-list">
-                            <div style="margin-bottom: 16px;">
-                                <h4 style="color: var(--accent-blue); margin-bottom: 8px;">Analysis & Reports</h4>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method post">POST</span>
-                                <span class="api-path">/api/analyze</span>
-                                <span class="api-desc">Analyze change directory</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/report/{change_number}/{file_path}</span>
-                                <span class="api-desc">Paginated HTML report</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/report-legacy/{change_number}</span>
-                                <span class="api-desc">Single-file HTML report</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/download/{change_number}?format=html|zip</span>
-                                <span class="api-desc">Download report files</span>
-                            </div>
-                            
-                            <div style="margin: 16px 0 8px;">
-                                <h4 style="color: var(--accent-green); margin-bottom: 8px;">Devices & Commands</h4>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/devices</span>
-                                <span class="api-desc">Paginated device list</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/devices/{hostname}/commands</span>
-                                <span class="api-desc">Device commands</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/devices/{hostname}/diff/{command}</span>
-                                <span class="api-desc">Command diff</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/search/devices?q={query}</span>
-                                <span class="api-desc">Search devices</span>
-                            </div>
-                            
-                            <div style="margin: 16px 0 8px;">
-                                <h4 style="color: var(--accent-purple); margin-bottom: 8px;">Query Engine</h4>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method post">POST</span>
-                                <span class="api-path">/api/chat</span>
-                                <span class="api-desc">Natural language query</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/query/suggestions</span>
-                                <span class="api-desc">Query suggestions</span>
-                            </div>
-                            
-                            <div style="margin: 16px 0 8px;">
-                                <h4 style="color: var(--accent-yellow); margin-bottom: 8px;">File Browsing</h4>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/browse/drives</span>
-                                <span class="api-desc">List available drives</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method post">POST</span>
-                                <span class="api-path">/api/browse/directory</span>
-                                <span class="api-desc">Browse directory</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method post">POST</span>
-                                <span class="api-path">/api/browse/validate</span>
-                                <span class="api-desc">Validate change directory</span>
-                            </div>
-                            
-                            <div style="margin: 16px 0 8px;">
-                                <h4 style="color: var(--accent-cyan); margin-bottom: 8px;">Sessions & Status</h4>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/sessions</span>
-                                <span class="api-desc">List active sessions</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method delete">DEL</span>
-                                <span class="api-path">/api/sessions/{session_id}</span>
-                                <span class="api-desc">Delete session</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/statistics</span>
-                                <span class="api-desc">Analysis statistics</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/health</span>
-                                <span class="api-desc">Health check</span>
-                            </div>
-                            
-                            <div style="margin: 16px 0 8px;">
-                                <h4 style="color: var(--accent-red); margin-bottom: 8px;">Masking Configuration</h4>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/masking/profiles</span>
-                                <span class="api-desc">Available masking profiles</span>
-                            </div>
-                            <div class="api-item">
-                                <span class="api-method get">GET</span>
-                                <span class="api-path">/api/masking/categories</span>
-                                <span class="api-desc">Masking categories</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </main>
     </div>
     
@@ -1164,15 +1012,84 @@
         // Initialize Lucide icons
         lucide.createIcons();
         
-        // State
-        let currentSessionId = null;
-        let currentChangeNumber = null;
+        // State - restore from sessionStorage if available
+        let currentSessionId = sessionStorage.getItem('netdiff_session_id') || null;
+        let currentChangeNumber = sessionStorage.getItem('netdiff_change_number') || null;
         let currentBrowserPath = null;
         let browserParentPath = null;
         let devicesPage = 1;
         
         // API Base URL
         const API_BASE = '';
+        
+        // Save session state to sessionStorage
+        function saveSessionState() {
+            if (currentSessionId) {
+                sessionStorage.setItem('netdiff_session_id', currentSessionId);
+                sessionStorage.setItem('netdiff_change_number', currentChangeNumber);
+                
+                // Save report data
+                const reportData = {
+                    totalDevices: document.getElementById('statTotalDevices').textContent,
+                    changedDevices: document.getElementById('statChangedDevices').textContent,
+                    totalCommands: document.getElementById('statTotalCommands').textContent,
+                    changedCommands: document.getElementById('statChangedCommands').textContent,
+                    paginatedReportUrl: document.getElementById('paginatedReportUrl').textContent,
+                    legacyReportUrl: document.getElementById('legacyReportUrl').textContent,
+                    downloadHtmlUrl: document.getElementById('downloadHtmlUrl').textContent,
+                    downloadZipUrl: document.getElementById('downloadZipUrl').textContent
+                };
+                sessionStorage.setItem('netdiff_report_data', JSON.stringify(reportData));
+            } else {
+                sessionStorage.removeItem('netdiff_session_id');
+                sessionStorage.removeItem('netdiff_change_number');
+                sessionStorage.removeItem('netdiff_report_data');
+            }
+        }
+        
+        // Restore session state from sessionStorage
+        function restoreSessionState() {
+            if (currentSessionId && currentChangeNumber) {
+                // Update session card
+                document.getElementById('sessionCard').style.display = 'block';
+                document.getElementById('sessionId').value = currentSessionId;
+                document.getElementById('changeNumber').value = currentChangeNumber;
+                
+                // Restore report data if available
+                const reportDataStr = sessionStorage.getItem('netdiff_report_data');
+                if (reportDataStr) {
+                    try {
+                        const reportData = JSON.parse(reportDataStr);
+                        
+                        // Update results section
+                        document.getElementById('noResults').style.display = 'none';
+                        document.getElementById('analysisResults').classList.add('active');
+                        
+                        document.getElementById('statTotalDevices').textContent = reportData.totalDevices;
+                        document.getElementById('statChangedDevices').textContent = reportData.changedDevices;
+                        document.getElementById('statTotalCommands').textContent = reportData.totalCommands;
+                        document.getElementById('statChangedCommands').textContent = reportData.changedCommands;
+                        
+                        // Update report links
+                        document.getElementById('paginatedReportLink').href = reportData.paginatedReportUrl;
+                        document.getElementById('paginatedReportUrl').textContent = reportData.paginatedReportUrl;
+                        
+                        document.getElementById('legacyReportLink').href = reportData.legacyReportUrl;
+                        document.getElementById('legacyReportUrl').textContent = reportData.legacyReportUrl;
+                        
+                        document.getElementById('downloadHtmlLink').href = reportData.downloadHtmlUrl;
+                        document.getElementById('downloadHtmlUrl').textContent = reportData.downloadHtmlUrl;
+                        
+                        document.getElementById('downloadZipLink').href = reportData.downloadZipUrl;
+                        document.getElementById('downloadZipUrl').textContent = reportData.downloadZipUrl;
+                        
+                        lucide.createIcons();
+                    } catch (e) {
+                        console.error('Failed to restore report data:', e);
+                    }
+                }
+            }
+        }
         
         // Toast notification
         function showToast(message, type = 'success') {
@@ -1293,6 +1210,7 @@
                 lucide.createIcons();
                 showToast(`Analysis complete! ${data.total_devices} devices, ${data.devices_with_changes} with changes`);
                 checkHealth();
+                saveSessionState();
                 
             } catch (e) {
                 showToast(e.message, 'error');
@@ -1594,6 +1512,37 @@
             document.getElementById('sessionId').value = sessionId;
             document.getElementById('changeNumber').value = changeNumber;
             
+            // Fetch and restore report data for this session
+            fetch(`${API_BASE}/api/statistics?session_id=${sessionId}`)
+                .then(res => res.json())
+                .then(stats => {
+                    // Update results section
+                    document.getElementById('noResults').style.display = 'none';
+                    document.getElementById('analysisResults').classList.add('active');
+                    
+                    document.getElementById('statTotalDevices').textContent = stats.total_devices || 0;
+                    document.getElementById('statChangedDevices').textContent = stats.devices_with_changes || 0;
+                    document.getElementById('statTotalCommands').textContent = stats.total_commands || 0;
+                    document.getElementById('statChangedCommands').textContent = stats.changed_commands || 0;
+                    
+                    // Update report links
+                    document.getElementById('paginatedReportLink').href = `/api/report/${changeNumber}/index.html`;
+                    document.getElementById('paginatedReportUrl').textContent = `/api/report/${changeNumber}/index.html`;
+                    
+                    document.getElementById('legacyReportLink').href = `/api/report-legacy/${changeNumber}`;
+                    document.getElementById('legacyReportUrl').textContent = `/api/report-legacy/${changeNumber}`;
+                    
+                    document.getElementById('downloadHtmlLink').href = `/api/download/${changeNumber}?format=html`;
+                    document.getElementById('downloadHtmlUrl').textContent = `/api/download/${changeNumber}?format=html`;
+                    
+                    document.getElementById('downloadZipLink').href = `/api/download/${changeNumber}?format=zip`;
+                    document.getElementById('downloadZipUrl').textContent = `/api/download/${changeNumber}?format=zip`;
+                    
+                    lucide.createIcons();
+                    saveSessionState();
+                })
+                .catch(e => console.error('Failed to load session data:', e));
+            
             showToast(`Now using session: ${changeNumber}`);
             showTab('results');
         }
@@ -1609,7 +1558,10 @@
                 if (sessionId === currentSessionId) {
                     currentSessionId = null;
                     currentChangeNumber = null;
+                    saveSessionState();
                     document.getElementById('sessionCard').style.display = 'none';
+                    document.getElementById('noResults').style.display = 'block';
+                    document.getElementById('analysisResults').classList.remove('active');
                 }
             } catch (e) {
                 showToast('Failed to delete session', 'error');
@@ -1621,6 +1573,7 @@
             checkHealth();
             loadSessions();
             loadQuerySuggestions();
+            restoreSessionState();
             
             // Handle Enter key in inputs
             document.getElementById('queryInput').addEventListener('keypress', (e) => {
